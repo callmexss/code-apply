@@ -1,8 +1,7 @@
 """Parsers for different file content formats."""
 
 import re
-from pathlib import Path
-from typing import Dict, List, Tuple, Protocol, Optional
+from typing import Dict, List, Tuple, Protocol
 
 
 class ContentParser(Protocol):
@@ -17,12 +16,21 @@ class PromptOutputParser:
     """Parser for the prompt output format."""
     
     def __init__(self):
-        self.file_path_pattern = r"---FILE_PATH:\s*(.*?)\s*\n```(?:\w+)?\n(.*?)```\s*\n---END_FILE"
+        # 改进的正则表达式以更健壮地处理语言说明符
+        self.file_path_pattern = r"---FILE_PATH:\s*(.*?)\s*\n```(?:(\w+)?\n)?(.*?)```\s*\n---END_FILE"
         self.file_regex = re.compile(self.file_path_pattern, re.DOTALL)
     
     def parse(self, content: str) -> List[Tuple[str, str]]:
         """
         Parse content in the prompt output format.
+        
+        The prompt output format is expected to be in the form:
+        
+        ---FILE_PATH: path/to/file.ext
+        ```language
+        file content
+        ```
+        ---END_FILE
         
         Args:
             content: The prompt output content to parse
@@ -35,7 +43,8 @@ class PromptOutputParser:
         
         for match in matches:
             file_path = match.group(1).strip()
-            file_content = match.group(2)
+            # group(2) is the language specifier (optional)
+            file_content = match.group(3)
             results.append((file_path, file_content))
         
         return results

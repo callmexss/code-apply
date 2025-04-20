@@ -64,11 +64,11 @@ def apply_code(source, target, dry_run=False, verbose=False):
         return False
 
 
-def apply_from_prompt(content: str, target_dir: str, similarity_threshold: float = 0.7, 
+def apply_from_prompt(content: str, target_dir: str, similarity_threshold: float = 0.7,
                      force: bool = False, dry_run: bool = False, verbose: bool = False):
     """
     Apply code from a prompt output to a target directory.
-    
+
     Args:
         content: The prompt output content
         target_dir: The target directory path
@@ -76,44 +76,44 @@ def apply_from_prompt(content: str, target_dir: str, similarity_threshold: float
         force: If True, force replacement regardless of similarity
         dry_run: If True, only show what would be done without making changes
         verbose: If True, print verbose output
-        
+
     Returns:
         bool: True if successful, False otherwise
     """
-    from code_apply.parsers import get_parser
-    from code_apply.matchers import find_matching_files, calculate_similarity
-    
+    from code_apply.core.parsers import get_parser
+    from code_apply.core.matchers import find_matching_files, calculate_similarity
+
     parser = get_parser("prompt")
     target_path = Path(target_dir)
-    
+
     if not target_path.exists():
         if verbose:
             click.echo(f"Target directory {target_path} does not exist, creating it")
         if not dry_run:
             target_path.mkdir(parents=True, exist_ok=True)
-    
+
     try:
         parsed_files = parser.parse(content)
-        
+
         if verbose:
             click.echo(f"Parsed {len(parsed_files)} files from prompt output")
-        
+
         for file_path, file_content in parsed_files:
             if verbose:
                 click.echo(f"Processing file: {file_path}")
-            
+
             # Find matching files based on filename
             filename = Path(file_path).name
             matching_files = find_matching_files(filename, target_path)
-            
+
             # Decide what to do based on matching files
             if not matching_files:
                 # No matching files found - always create a new file
                 target_file = target_path / file_path
-                
+
                 if verbose:
                     click.echo(f"No matching files found, creating new file: {target_file}")
-                
+
                 if dry_run:
                     click.echo(f"Would create {target_file}")
                 else:
@@ -126,26 +126,26 @@ def apply_from_prompt(content: str, target_dir: str, similarity_threshold: float
                 # Find the best match based on content similarity
                 best_match = None
                 best_score = 0.0
-                
+
                 for match_path in matching_files:
                     try:
                         with open(match_path, 'r', encoding='utf-8') as f:
                             target_content = f.read()
-                        
+
                         similarity = calculate_similarity(file_content, target_content)
-                        
+
                         if similarity > best_score:
                             best_score = similarity
                             best_match = match_path
                     except Exception:
                         # Skip files that can't be read as text
                         continue
-                
+
                 # If we have a good match or force is enabled
                 if best_score >= similarity_threshold:
                     if verbose:
                         click.echo(f"Found matching file: {best_match} (similarity: {best_score:.2f})")
-                    
+
                     if dry_run:
                         click.echo(f"Would update {best_match}")
                     else:
@@ -156,10 +156,10 @@ def apply_from_prompt(content: str, target_dir: str, similarity_threshold: float
                 elif force:
                     # No good match was found, but force is enabled
                     target_file = target_path / file_path
-                    
+
                     if verbose:
                         click.echo(f"Force mode enabled, creating new file: {target_file}")
-                    
+
                     if dry_run:
                         click.echo(f"Would create {target_file}")
                     else:
@@ -171,7 +171,7 @@ def apply_from_prompt(content: str, target_dir: str, similarity_threshold: float
                 else:
                     # No good match was found and force is not enabled
                     click.echo(f"No suitable match found for {file_path} (best similarity: {best_score:.2f})")
-        
+
         return True
     except Exception as e:
         click.echo(f"Error: {str(e)}", err=True)
