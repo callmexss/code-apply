@@ -71,7 +71,8 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 Use with below prompt:
 
 
-.. code-block:: bash
+.. code-block:: markdown
+
         请帮重构上面的代码，如果有文件需要修改，请生成该文件的完整代码，并严格按照以下格式:
 
 
