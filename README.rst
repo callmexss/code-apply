@@ -71,21 +71,19 @@ This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypack
 Use with below prompt:
 
 
-```markdown
-请帮重构上面的代码，如果有文件需要修改，请生成该文件的完整代码，并严格按照以下格式:
+.. code-block:: bash
+        请帮重构上面的代码，如果有文件需要修改，请生成该文件的完整代码，并严格按照以下格式:
 
 
----FILE_PATH: [文件路径]
-\`\`\`[语言]
-[文件代码内容]
-\`\`\`
----END_FILE
+        ---FILE_PATH: [文件路径]
+        ```[语言]
+        [文件代码内容]
+        ```
+        ---END_FILE
 
-示例:
----FILE_PATH: src/main.js
-\`\`\`javascript
-console.log('Hello World');
-\`\`\`
----END_FILE
-
-```
+        示例:
+        ---FILE_PATH: src/main.js
+        ```javascript
+        console.log('Hello World');
+        ```
+        ---END_FILE
