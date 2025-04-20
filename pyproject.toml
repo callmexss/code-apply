@@ -39,7 +39,7 @@ homepage = "https://github.com/callmexss/code_apply"
 code-apply = "code_apply.cli:main"
 
 [tool.setuptools]
-package-dir = {"" = "code_apply"}
+package-dir = {"" = "."}
 
 [tool.setuptools.package-data]
 "*" = ["*.*"]

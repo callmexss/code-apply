@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from code_apply.parsers import PromptOutputParser, get_parser
-from code_apply.matchers import find_matching_files, calculate_similarity, find_best_match
+from code_apply.core.parsers import PromptOutputParser, get_parser
+from code_apply.core.matchers import find_matching_files, calculate_similarity, find_best_match
 from code_apply.code_apply import apply_from_prompt
 
 
